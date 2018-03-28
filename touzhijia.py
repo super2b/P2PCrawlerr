@@ -18,12 +18,35 @@ def getTitle(url):
     return None
   return title
 
-i = 1
+def getContent(url):
+  try:
+    html = urlopen(url)
+  except HTTPError as e:
+    return None
+  
+  contents = []
+  try:
+    bsObj = BeautifulSoup(html, 'html.parser')
+    trs = bsObj.tbody.findAll('tr')
+    for t in trs:
+      contents.append(t.td.a.text)
+  except AttributeError as e:
+    return None
+  return contents
+
+page = 1
+pageSize = 20
 continueLoopThePage = True
-while i <= 5:
-  targetUrl = str('https://www.touzhijia.com/debt/regulars/all?page=%d&limit=30'  %(i))  
-  title = getTitle(targetUrl)
-  if title:
-    print('the title of page %d: %s' % (i, title))
+finalContents = []
+while page <= 3:
+  targetUrl = str('https://www.touzhijia.com/debt/regulars/all?page=%d&limit=%d'  %(page,pageSize))  
+  content = getContent(targetUrl)
+  if content:
+    finalContents.extend(content)
+  page += 1
+
+i = 1
+for c in finalContents:
+  print('%i:%s\n' %(i, c))
   i += 1
 
