@@ -18,6 +18,19 @@ def getTitle(url):
     return None
   return title
 
+def getDesc(url):
+  try:
+    html = urlopen(url)
+  except HTTPError as e:
+    return None
+  
+  try:
+    bsObj = BeautifulSoup(html, 'html.parser')
+    desc = bsObj.find('meta',{'name':'description'})
+  except AttributeError as e:
+    return None
+  return desc.attrs['content']
+
 def getContent(url):
   try:
     html = urlopen(url)
@@ -36,10 +49,14 @@ def getContent(url):
 
 page = 1
 pageSize = 20
+targetUrl = str('https://www.touzhijia.com/debt/regulars/all?page=%d&limit=%d'  %(page,pageSize))  
+desc = getDesc(targetUrl)
+print(desc)
+###########
+
 continueLoopThePage = True
 finalContents = []
 while page <= 3:
-  targetUrl = str('https://www.touzhijia.com/debt/regulars/all?page=%d&limit=%d'  %(page,pageSize))  
   content = getContent(targetUrl)
   if content:
     finalContents.extend(content)
