@@ -43,6 +43,17 @@ def getContent(url):
     trs = bsObj.tbody.findAll('tr')
     for t in trs:
       contents.append(t.td.a.text)
+      detailUrl = t.td.a.attrs['href']
+      print(detailUrl)
+      try:
+        if not str(detailUrl).startswith('http'):
+          detailUrl = "http:" + str(detailUrl)
+        detailHtml = urlopen(detailUrl)
+        detailBsObj = BeautifulSoup(detailHtml, 'html.parser')
+        desc = detailBsObj.find('div', {'id':'description'}).findAll('td')[0].p.text
+        print(desc)
+      except HTTPError as e:
+        return None
   except AttributeError as e:
     return None
   return contents
